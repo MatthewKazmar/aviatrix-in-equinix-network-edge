@@ -4,28 +4,16 @@ variable "gw_name" {
   default     = "edge-equinix"
 }
 
+variable "redundant" {
+  description = "Run Edge in A/A HA."
+  type = bool
+  default = false
+}
+
 variable "site_id" {
   description = "Site ID."
   type        = string
   default     = "Equinix"
-}
-
-variable "management_interface_config" {
-  description = "Management interface config type."
-  type        = string
-  default     = "Static"
-}
-
-variable "management_interface_ip_prefix" {
-  description = "Dummy management interface CIDR. This will be replaced by cloud-init."
-  type        = string
-  default     = "192.168.10.101/24"
-}
-
-variable "management_default_gateway_ip" {
-  description = "Dummy management default gateway IP. This will be replaced by cloud-init."
-  type        = string
-  default     = "192.168.10.254"
 }
 
 variable "wan_interface_ip_prefix" {
@@ -56,18 +44,6 @@ variable "secondary_dns_server_ip" {
   description = "Primary DNS server IP."
   type        = string
   default     = "8.8.4.4"
-}
-
-variable "ztp_file_type" {
-  description = "ZTP file type."
-  type        = string
-  default     = "cloud-init"
-}
-
-variable "ztp_file_download_path" {
-  description = "The folder path where the ZTP file will be downloaded."
-  type        = string
-  default     = "."
 }
 
 variable "local_as_number" {
@@ -130,17 +106,17 @@ variable "device_version" {
   default     = "6.9"
 }
 
-variable "device_name" {
-  description = "Equinix Network device name."
-  type        = string
-  default     = "aviatrixedge"
-}
+# variable "device_name" {
+#   description = "Equinix Network device name."
+#   type        = string
+#   default     = ""
+# }
 
-variable "device_hostname" {
-  description = "Equinix Network device hostname."
-  type        = string
-  default     = "aviatrixedge"
-}
+# variable "device_hostname" {
+#   description = "Equinix Network device hostname."
+#   type        = string
+#   default     = ""
+# }
 
 variable "notifications" {
   description = "List of email addresses that will receive device status notifications."
@@ -154,14 +130,16 @@ variable "term_length" {
   default     = 1
 }
 
-variable "filepath" {
-  description = "Cloud init file path."
-  type        = string
-  default     = "."
+variable "transit_gw_attachment" {
+  description = "Transit gateways to attach to."
+  type = list(string)
+  default = []
 }
 
-variable "file_name" {
-  description = "Cloud init file name."
-  type        = string
-  default     = "cloud-init.txt"
+locals {
+  device_name = coalesce(var.device_name, var.gw_name)
+  device_hostname = coalesce(var.device_hostname, var.device_name, var.gw_name)
+  
+  count = var.ha ? 1 : 2
+
 }
