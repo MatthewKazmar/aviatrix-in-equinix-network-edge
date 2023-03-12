@@ -1,7 +1,7 @@
 data "aviatrix_transit_gateway" "this" {
   for_each = toset(local.transit_gws)
 
-  name = each.value
+  gw_name = each.value
 }
 
 resource "aviatrix_edge_spoke" "this" {
@@ -57,7 +57,7 @@ resource "equinix_network_file" "this" {
   metro_code       = data.equinix_network_account.this.metro_code
   byol             = true
   self_managed     = true
-  device_type_code = var.type_code
+  device_type_code = var.edge["type_code"]
   process_type     = "CLOUD_INIT"
   file_name        = split("/", data.local_file.this[0].filename)[1]
   content          = data.local_file.this[count.index].content
