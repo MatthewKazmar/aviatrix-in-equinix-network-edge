@@ -64,7 +64,7 @@ locals {
   dx_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
     local.all_circuits,
     v,
-    { circuit_name   = each.key,
+    { circuit_name   = k,
       edge_interface = local.edge_interface[k],
       metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
@@ -73,7 +73,7 @@ locals {
   exr_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
     local.all_circuits,
     v,
-    { circuit_name   = each.key,
+    { circuit_name   = k,
       edge_interface = local.edge_interface[k],
       metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
@@ -82,7 +82,7 @@ locals {
   # gcp_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
   #   local.all_circuits,
   #   v,
-  #   { circuit_name = each.key }
+  #   { circuit_name = k }
   # ) if v.cloud_type == 4 }
 
   dx_output = try({ for k, v in module.directconnect : k =>
