@@ -124,9 +124,9 @@ module "expressroute" {
   circuit = {
     is_redundant         = var.edge["redundant"],
     circuit_name         = each.value
-    vpc_id               = data.aviatrix_transit_gateway.this[each.key].vpc_id
-    csp_region           = data.aviatrix_transit_gateway.this[each.key].vpc_reg
-    transit_subnet_cidrs = compact([data.aviatrix_transit_gateway.this[each.key].subnet, data.aviatrix_transit_gateway.this[each.key].ha_subnet])
+    vpc_id               = var.edge["equinix_fabric"][each.value]["vpc_id"]
+    csp_region           = var.edge["equinix_fabric"][each.value]["vpc_reg"]
+    transit_subnet_cidrs = var.edge["equinix_fabric"][each.value]["transit_subnet_cidrs"]
     speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
     equinix_metrocode    = var.edge["metro_code"]
     customer_side_asn    = var.edge["customer_side_asn"]
@@ -148,9 +148,9 @@ module "expressroute" {
 #   circuit = {
 #     is_redundant         = var.edge["redundant"],
 #     circuit_name         = each.value
-#     vpc_id               = data.aviatrix_transit_gateway.this[each.key].vpc_id
-#     csp_region           = data.aviatrix_transit_gateway.this[each.key].vpc_reg
-#     speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
+#     vpc_id               = var.edge["equinix_fabric"][each.value]["vpc_id"]
+#     csp_region           = var.edge["equinix_fabric"][each.value]["vpc_reg"]
+#     speed_in_mbit        = var.edge["equinix_fabric"][each.value]["transit_subnet_cidrs"]
 #     equinix_metrocode    = var.edge["metro_code"]
 #     customer_side_asn    = var.edge["customer_side_asn"]
 #     edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
