@@ -36,7 +36,10 @@ locals {
   acl_name        = "${var.edge["gw_name"]}-acl"
   acl_description = "ACL for ${var.edge["gw_name"]}, primary and ha (if deployed.)"
 
-  transit_gws = [for k, v in var.edge["equinix_fabric"] : v.transit_gw]
+  transit_gws       = [for k, v in var.edge["equinix_fabric"] : v.transit_gw]
+  aws_transit_gws   = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw].cloud_type == 1 }
+  azure_transit_gws = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw] == 8 }
+  gcp_transit_gws   = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw] == 4 }
 
   #Aviatrix Edge provider needs 2 DNS Server IPs, no more, no less. Fix if empty list or if only 1 passed.
   dns_server_ips = length(var.edge["dns_server_ips"]) == 0 ? ["8.8.8.8", "1.1.1.1"] : length(var.edge["dns_server_ips"]) == 1 ? [var.edge["dns_server_ips"][0], var.edge["dns_server_ips"][0]] : var.edge["dns_server_ips"]

@@ -1,8 +1,8 @@
-# data "aviatrix_transit_gateway" "this" {
-#   for_each = toset(local.transit_gws)
+data "aviatrix_transit_gateway" "this" {
+  for_each = toset(local.transit_gws)
 
-#   gw_name = each.value
-# }
+  gw_name = each.value
+}
 
 resource "aviatrix_edge_spoke" "this" {
   count = var.edge["redundant"] ? 2 : 1
@@ -95,19 +95,18 @@ resource "equinix_network_device" "this" {
   }
 }
 
-module "underlay" {
-  for_each = var.edge["equinix_fabric"]
+module "directconnect" {
+  for_each = local.aws_transit_gws
 
-  source = "github.com/MatthewKazmar/avx-private-underlay"
+  source = "./modules/directconnect"
 
   circuit = {
-    is_redundant = var.edge["redundant"],
-    circuit_name = each.key
-    transit_gw   = each.value.transit_gw
-    # cloud_type           = data.aviatrix_transit_gateway.this[each.value.transit_gw].cloud_type
-    # vpc_id               = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_id
-    # csp_region           = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_reg
-    speed_in_mbit        = each.value["speed"]
+    is_redundant         = var.edge["redundant"],
+    circuit_name         = each.value
+    vpc_id               = data.aviatrix_transit_gateway.this[each.key].vpc_id
+    csp_region           = data.aviatrix_transit_gateway.this[each.key].vpc_reg
+    transit_subnet_cidrs = compact([data.aviatrix_transit_gateway.this[each.key].subnet, data.aviatrix_transit_gateway.this[each.key].ha_subnet])
+    speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
     equinix_metrocode    = var.edge["metro_code"]
     customer_side_asn    = var.edge["customer_side_asn"]
     edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
@@ -116,6 +115,50 @@ module "underlay" {
     notifications        = var.edge["notifications"]
   }
 }
+
+module "directconnect" {
+  for_each = local.azure_transit_gws
+
+  source = "./modules/expressroute"
+
+  circuit = {
+    is_redundant         = var.edge["redundant"],
+    circuit_name         = each.value
+    vpc_id               = data.aviatrix_transit_gateway.this[each.key].vpc_id
+    csp_region           = data.aviatrix_transit_gateway.this[each.key].vpc_reg
+    transit_subnet_cidrs = compact([data.aviatrix_transit_gateway.this[each.key].subnet, data.aviatrix_transit_gateway.this[each.key].ha_subnet])
+    speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
+    equinix_metrocode    = var.edge["metro_code"]
+    customer_side_asn    = var.edge["customer_side_asn"]
+    edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
+    edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.key) + 3)
+    metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
+    notifications        = var.edge["notifications"]
+  }
+}
+
+# GCP Terraform Provider for Interconnect is currently broken.
+# See the submodule for details.
+
+# module "cloudinterconnect" {
+#   for_each = local.gcp_transit_gws
+
+#   source = "./modules/cloudinterconnect"
+
+#   circuit = {
+#     is_redundant         = var.edge["redundant"],
+#     circuit_name         = each.value
+#     vpc_id               = data.aviatrix_transit_gateway.this[each.key].vpc_id
+#     csp_region           = data.aviatrix_transit_gateway.this[each.key].vpc_reg
+#     speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
+#     equinix_metrocode    = var.edge["metro_code"]
+#     customer_side_asn    = var.edge["customer_side_asn"]
+#     edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
+#     edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.key) + 3)
+#     metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
+#     notifications        = var.edge["notifications"]
+#   }
+# }
 
 
 # resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {

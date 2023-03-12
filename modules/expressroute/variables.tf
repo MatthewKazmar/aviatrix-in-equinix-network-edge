@@ -9,7 +9,7 @@ variable "circuit" {
     equinix_metrocode              = string,
     speed_in_mbit                  = string,
     edge_uuid                      = optional(list(string), [null, null]),
-    edge_interface                 = optional(list(number), [null, null]),
+    edge_interface                 = optional(number, null),
     metal_service_tokens           = optional(list(string), [null, null]),
     customer_side_asn              = number,
     bgp_auth_key                   = optional(string, "aviatrix1234#!"),

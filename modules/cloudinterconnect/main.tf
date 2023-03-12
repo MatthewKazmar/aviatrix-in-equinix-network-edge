@@ -25,16 +25,9 @@ resource "google_compute_interconnect_attachment" "this" {
   mtu                      = 1500
 }
 
-# resource "google_compute_router_interface" "this" {
-#   count = var.circuit["is_redundant"] ? 2 : 1
-
-#   project                 = local.project
-#   name                    = "${google_compute_interconnect_attachment.this[count.index].name}-interface"
-#   region          = google_compute_router.this.region
-#   router                  = google_compute_router.this.name
-#   ip_range                = google_compute_interconnect_attachment.this[count.index].cloud_router_ip_address
-#   interconnect_attachment = google_compute_interconnect_attachment.this[count.index].self_link
-# }
+# In google_compute_router_peer, the interface attribute is mandatory.
+# The interface name is auto-ia-<attachment name>-<random string>.
+# There is no Terraform method for retrieving this interface name.
 
 # resource "google_compute_router_peer" "this" {
 #   count = var.circuit["is_redundant"] ? 2 : 1
@@ -57,7 +50,7 @@ resource "equinix_ecx_l2_connection" "this" {
   speed_unit          = "MB"
   notifications       = var.circuit["notifications"]
   device_uuid         = var.circuit["edge_uuid"][count.index]
-  device_interface_id = var.circuit["edge_interface"][count.index]
+  device_interface_id = var.circuit["edge_interface"]
   service_token       = var.circuit["metal_service_tokens"][count.index]
   seller_region       = local.csp_region
   seller_metro_code   = var.circuit["equinix_metrocode"]

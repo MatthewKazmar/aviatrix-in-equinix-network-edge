@@ -95,7 +95,7 @@ resource "equinix_ecx_l2_connection" "this" {
   speed_unit          = "MB"
   notifications       = var.circuit["notifications"]
   device_uuid         = var.circuit["edge_uuid"][0]
-  device_interface_id = var.circuit["edge_interface"][0]
+  device_interface_id = var.circuit["edge_interface"]
   service_token       = var.circuit["metal_service_tokens"][0]
   seller_region       = var.circuit["csp_region"]
   seller_metro_code   = var.circuit["equinix_metrocode"]
