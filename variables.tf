@@ -40,9 +40,4 @@ locals {
 
   #Aviatrix Edge provider needs 2 DNS Server IPs, no more, no less. Fix if empty list or if only 1 passed.
   dns_server_ips = length(var.edge["dns_server_ips"]) == 0 ? ["8.8.8.8", "1.1.1.1"] : length(var.edge["dns_server_ips"]) == 1 ? [var.edge["dns_server_ips"][0], var.edge["dns_server_ips"][0]] : var.edge["dns_server_ips"]
-
-  edge_uuid_interface = { for k, v in var.edge["equinix_fabric"] : k => {
-    uuid      = coalescelist(var.equinix_edge_intermediary[k]["edge_uuid"], equinix_network_device.this[*].id),
-    interface = var.equinix_edge_intermediary[k]["edge_interface"] != 0 ? var.equinix_edge_intermediary[k]["edge_interface"] : index(keys(var.edge["equinix_fabric"]), k) + 3
-  } }
 }
