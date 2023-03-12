@@ -2,7 +2,7 @@ variable "edge" {
   type = object({
     gw_name                   = string,
     site_id                   = optional(string, ""),
-    redundant                 = optional(string, false),
+    redundant                 = optional(bool, false),
     wan_interface_ip_prefixes = list(string),
     wan_default_gateway_ip    = string,
     lan_interface_ip_prefixes = list(string),
@@ -36,7 +36,9 @@ locals {
   acl_name        = "${var.edge["gw_name"]}-acl"
   acl_description = "ACL for ${var.edge["gw_name"]}, primary and ha (if deployed.)"
 
-  transit_gws       = [for k, v in var.edge["equinix_fabric"] : v.transit_gw]
+  transit_gws    = [for k, v in var.edge["equinix_fabric"] : v.transit_gw]
+  transit_gws_ha = var.edge["redundant"] ? local.transit_gws : []
+
   aws_transit_gws   = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw].cloud_type == 1 }
   azure_transit_gws = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw] == 8 }
   gcp_transit_gws   = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if data.aviatrix_transit_gateway.this[v.transit_gw] == 4 }

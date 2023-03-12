@@ -171,9 +171,7 @@ resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
 }
 
 resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment_ha" {
-  count = var.edge["redundant"] ? 1 : 0
-
-  for_each = toset(local.transit_gws)
+  for_each = toset(local.transit_gws_ha)
 
   spoke_gw_name   = aviatrix_edge_spoke.this[1].gw_name
   transit_gw_name = each.value
