@@ -27,10 +27,10 @@ variable "edge" {
 }
 
 variable "equinix_edge_intermediary" {
-  type = object({
+  type = map(object({
     edge_uuid            = optional(list(string), null),
     metal_service_tokens = optional(list(string), null)
-  })
+  }))
 }
 
 locals {
@@ -58,15 +58,15 @@ locals {
     equinix_metrocode    = var.edge["metro_code"],
     customer_side_asn    = var.edge["customer_side_asn"],
     notifications        = var.edge["notifications"],
-    edge_uuid            = local.edge_uuid,
-    metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
+    edge_uuid            = local.edge_uuid
   }
 
   dx_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
     local.all_circuits,
     v,
     { circuit_name   = each.key,
-      edge_interface = local.edge_interface[k]
+      edge_interface = local.edge_interface[k],
+      metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
   ) if v.cloud_type == 1 }
 
@@ -74,7 +74,8 @@ locals {
     local.all_circuits,
     v,
     { circuit_name   = each.key,
-      edge_interface = local.edge_interface[k]
+      edge_interface = local.edge_interface[k],
+      metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
   ) if v.cloud_type == 8 }
 
