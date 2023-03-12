@@ -46,21 +46,21 @@ locals {
   #Aviatrix Edge provider needs 2 DNS Server IPs, no more, no less. Fix if empty list or if only 1 passed.
   dns_server_ips = length(var.edge["dns_server_ips"]) == 0 ? ["8.8.8.8", "1.1.1.1"] : length(var.edge["dns_server_ips"]) == 1 ? [var.edge["dns_server_ips"][0], var.edge["dns_server_ips"][0]] : var.edge["dns_server_ips"]
 
-  dx_output = try({ for k, v in module.directconnect : aws_transit_gws[k] =>
+  dx_output = try({ for k, v in module.directconnect : local.aws_transit_gws[k] =>
     {
       csp_peering_addresses           = v.csp_peering_addresses,
       customer_side_peering_addresses = v.customer_side_peering_addresses
     } }, {}
   )
 
-  exr_output = try({ for k, v in module.expressroute : azure_transit_gws[k] =>
+  exr_output = try({ for k, v in module.expressroute : local.azure_transit_gws[k] =>
     {
       csp_peering_addresses           = v.csp_peering_addresses,
       customer_side_peering_addresses = v.customer_side_peering_addresses
     } }, {}
   )
 
-  gcp_output = try({ for k, v in module.cloudinterconnect : gcp_transit_gws[k] =>
+  gcp_output = try({ for k, v in module.cloudinterconnect : local.gcp_transit_gws[k] =>
     {
       csp_peering_addresses           = v.csp_peering_addresses,
       customer_side_peering_addresses = v.customer_side_peering_addresses
