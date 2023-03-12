@@ -1,8 +1,8 @@
-data "aviatrix_transit_gateway" "this" {
-  for_each = toset(local.transit_gws)
+# data "aviatrix_transit_gateway" "this" {
+#   for_each = toset(local.transit_gws)
 
-  gw_name = each.value
-}
+#   gw_name = each.value
+# }
 
 resource "aviatrix_edge_spoke" "this" {
   count = var.edge["redundant"] ? 2 : 1
@@ -103,10 +103,10 @@ module "underlay" {
   circuit = {
     is_redundant         = var.edge["redundant"],
     circuit_name         = each.key
-    cloud_type           = data.aviatrix_transit_gateway.this[each.value.transit_gw].cloud_type
-    vpc_id               = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_id
-    route_table_id       = aws_route_table.this.id
-    csp_region           = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_reg
+    transit_gw = each.value.transit_gw
+    # cloud_type           = data.aviatrix_transit_gateway.this[each.value.transit_gw].cloud_type
+    # vpc_id               = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_id
+    # csp_region           = data.aviatrix_transit_gateway.this[each.value.transit_gw].vpc_reg
     speed_in_mbit        = each.value["speed"]
     equinix_metrocode    = var.edge["metro_code"]
     customer_side_asn    = var.edge["customer_side_asn"]
