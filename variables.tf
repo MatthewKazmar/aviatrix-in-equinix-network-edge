@@ -14,10 +14,13 @@ variable "edge" {
     device_version            = optional(string, "6.9"),
     core_count                = optional(number, 2),
     term_length               = optional(number, 1),
-    notifications             = list(string)
+    notifications             = list(string),
     equinix_fabric = optional(map(object({
-      speed      = number,
-      transit_gw = string,
+      speed                = number,
+      transit_gw           = string,
+      vpc_id               = string,
+      transit_subnet_cidrs = list(string),
+      csp_region           = string
     })), {})
   })
 }
