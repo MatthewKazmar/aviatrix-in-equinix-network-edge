@@ -60,10 +60,10 @@ locals {
     } }, {}
   )
 
-  gcp_output = try({ for k, v in module.cloudinterconnect : local.gcp_transit_gws[k] =>
-    {
-      csp_peering_addresses           = v.csp_peering_addresses,
-      customer_side_peering_addresses = v.customer_side_peering_addresses
-    } }, {}
-  )
+  # gcp_output = try({ for k, v in module.cloudinterconnect : local.gcp_transit_gws[k] =>
+  #   {
+  #     csp_peering_addresses           = v.csp_peering_addresses,
+  #     customer_side_peering_addresses = v.customer_side_peering_addresses
+  #   } }, {}
+  # )
 }

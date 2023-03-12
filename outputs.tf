@@ -7,5 +7,6 @@ output "equinix_network_device" {
 }
 
 output "equinix_fabric" {
-  value = merge(local.dx_output, local.exr_output, local.gcp_output)
+  value = merge(local.dx_output, local.exr_output)
+  #value = merge(local.dx_output, local.exr_output, local.gcp_output)
 }
