@@ -1,3 +1,9 @@
+data "aviatrix_transit" "this" {
+  for_each = toset(local.transit_gw)
+
+  name = each.value
+}
+
 resource "aviatrix_edge_spoke" "this" {
   count = var.edge["redundant"] ? 2 : 1
 
@@ -14,7 +20,7 @@ resource "aviatrix_edge_spoke" "this" {
   secondary_dns_server_ip        = local.dns_server_ips[1]
   ztp_file_type                  = "cloud-init"
   ztp_file_download_path         = "."
-  local_as_number = var.edge["local_as_number"]
+  local_as_number                = var.edge["local_as_number"]
 
   # advanced options - optional
 
@@ -79,14 +85,37 @@ resource "equinix_network_device" "this" {
   dynamic "secondary_device" {
     for_each = var.edge["redundant"] ? [1] : []
 
-    name = local.gw_names[1]
-    metro_code = data.equinix_network_account.this.metro_code
-    account_number = data.equinix_network_account.this.number
-    notifications = var.edge["notifications"]
+    name               = local.gw_names[1]
+    metro_code         = data.equinix_network_account.this.metro_code
+    account_number     = data.equinix_network_account.this.number
+    notifications      = var.edge["notifications"]
     cloud_init_file_id = equinix_network_file.this[1].uuid
     acl_template_id    = equinix_network_acl_template.this.id
   }
 }
+
+module "underlay" {
+  for_each = var.edge["equinix_fabric"]
+
+  source = "github.com/MatthewKazmar/avx-private-underlay"
+
+  circuit = {
+    is_redundant         = var.edge["redundant"],
+    circuit_name         = each.key
+    cloud_type           = data.aviatrix_transit.this[each.value.transit_gw].cloud_type
+    vpc_id               = data.aviatrix_transit.this[each.value.transit_gw].vpc_id
+    route_table_id       = aws_route_table.this.id
+    csp_region           = data.aviatrix_transit.this[each.value.transit_gw].vpc_reg
+    speed_in_mbit        = each.value["speed"]
+    equinix_metrocode    = var.edge["metro_code"]
+    customer_side_asn    = var.edge["customer_side_asn"]
+    edge_uuid            = local.edge_uuid_interface["uuid"]
+    edge_interface       = local.edge_uuid_interface["interface"]
+    metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
+    notifications        = var.edge["notifications"]
+  }
+}
+
 
 resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
   for_each = toset(var.transit_gw_attachment)
