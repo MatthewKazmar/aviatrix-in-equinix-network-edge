@@ -116,7 +116,7 @@ module "directconnect" {
   }
 }
 
-module "directconnect" {
+module "expressroute" {
   for_each = local.azure_transit_gws
 
   source = "./modules/expressroute"
