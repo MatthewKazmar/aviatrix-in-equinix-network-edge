@@ -117,26 +117,26 @@ module "underlay" {
 }
 
 
-resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
-  for_each = toset(var.transit_gw_attachment)
+# resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
+#   for_each = toset(var.transit_gw_attachment)
 
-  spoke_gw_name   = aviatrix_edge_spoke.this[0].gw_name
-  transit_gw_name = each.value
+#   spoke_gw_name   = aviatrix_edge_spoke.this[0].gw_name
+#   transit_gw_name = each.value
 
-  number_of_retries = 3
-}
+#   number_of_retries = 3
+# }
 
-resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment_ha" {
-  count = var.edge["redundant"] ? 1 : 0
+# resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment_ha" {
+#   count = var.edge["redundant"] ? 1 : 0
 
-  for_each = toset(var.edge["transit_gw_attachment"])
+#   for_each = toset(var.edge["transit_gw_attachment"])
 
-  spoke_gw_name   = aviatrix_edge_spoke.this[1].gw_name
-  transit_gw_name = each.value
+#   spoke_gw_name   = aviatrix_edge_spoke.this[1].gw_name
+#   transit_gw_name = each.value
 
-  number_of_retries = 3
-}
+#   number_of_retries = 3
+# }
 
-locals {
-  acl_template_id = var.create_acl ? equinix_network_acl_template.this[0].id : var.acl_template_id
-}
+# locals {
+#   acl_template_id = var.create_acl ? equinix_network_acl_template.this[0].id : var.acl_template_id
+# }
