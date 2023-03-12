@@ -84,13 +84,14 @@ resource "equinix_network_device" "this" {
 
   dynamic "secondary_device" {
     for_each = var.edge["redundant"] ? [1] : []
-
-    name               = local.gw_names[1]
-    metro_code         = data.equinix_network_account.this.metro_code
-    account_number     = data.equinix_network_account.this.number
-    notifications      = var.edge["notifications"]
-    cloud_init_file_id = equinix_network_file.this[1].uuid
-    acl_template_id    = equinix_network_acl_template.this.id
+    content {
+      name               = local.gw_names[1]
+      metro_code         = data.equinix_network_account.this.metro_code
+      account_number     = data.equinix_network_account.this.number
+      notifications      = var.edge["notifications"]
+      cloud_init_file_id = equinix_network_file.this[1].uuid
+      acl_template_id    = equinix_network_acl_template.this.id
+    }
   }
 }
 
