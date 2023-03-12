@@ -25,7 +25,7 @@ variable "edge" {
 variable "equinix_edge_intermediary" {
   type = map(object({
     edge_uuid            = optional(list(string), []),
-    edge_interface       = optional(number, null),
+    edge_interface       = optional(number, 0),
     metal_service_tokens = optional(list(string), [])
   }))
   default = {}
@@ -44,6 +44,6 @@ locals {
 
   edge_uuid_interface = { for k, v in var.edge["equinix_fabric"] : k => {
     uuid      = coalescelist(var.equinix_edge_intermediary[k]["edge_uuid"], equinix_network_device.this[*].id),
-    interface = coalesce(var.equinix_edge_intermediary[k]["edge_interface"], index(keys(var.edge["equinix_fabric"]), k) + 3)
+    interface = var.equinix_edge_intermediary[k]["edge_interface"] != 0 ? var.equinix_edge_intermediary[k]["edge_interface"] : index(keys(var.edge["equinix_fabric"]), k) + 3
   } }
 }

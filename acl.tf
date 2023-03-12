@@ -7,7 +7,7 @@ resource "equinix_network_acl_template" "this" {
   description = local.acl_description
 
   inbound_rule {
-    subnet      = "${chomp(data.http.myip[0].response_body)}/32"
+    subnet      = "${chomp(data.http.myip.response_body)}/32"
     protocol    = "IP"
     src_port    = "any"
     dst_port    = "any"
