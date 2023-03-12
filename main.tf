@@ -111,7 +111,7 @@ module "underlay" {
     equinix_metrocode    = var.edge["metro_code"]
     customer_side_asn    = var.edge["customer_side_asn"]
     edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
-    edge_interface       = var.equinix_edge_intermediary["edge_interface"] != 0 ? var.equinix_edge_intermediary["edge_interface"] : index(keys(var.edge["equinix_fabric"]), each.key) + 3
+    edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.key) + 3)
     metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
     notifications        = var.edge["notifications"]
   }

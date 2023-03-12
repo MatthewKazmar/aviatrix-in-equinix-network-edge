@@ -25,7 +25,7 @@ variable "edge" {
 variable "equinix_edge_intermediary" {
   type = object({
     edge_uuid            = optional(list(string), []),
-    edge_interface       = optional(number, 0),
+    edge_interface       = optional(number, null),
     metal_service_tokens = optional(list(string), [])
   })
 }
