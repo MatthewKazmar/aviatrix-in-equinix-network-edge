@@ -32,7 +32,7 @@ variable "equinix_edge_intermediary" {
 
 locals {
   gw_names        = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
-  site_id         = coalesce(var.edge["site_id"], "equinix-${var.edge["site_code"]}")
+  site_id         = coalesce(var.edge["site_id"], "equinix-${var.edge["metro_code"]}")
   acl_name        = "${var.edge["gw_name"]}-acl"
   acl_description = "ACL for ${var.edge["gw_name"]}, primary and ha (if deployed.)"
 
