@@ -1,9 +1,3 @@
-# data "aviatrix_transit_gateway" "this" {
-#   for_each = toset(local.transit_gws)
-
-#   gw_name = each.value
-# }
-
 resource "aviatrix_edge_spoke" "this" {
   count = var.edge["redundant"] ? 2 : 1
 
@@ -96,69 +90,30 @@ resource "equinix_network_device" "this" {
 }
 
 module "directconnect" {
-  for_each = local.aws_transit_gws
+  for_each = local.dx_circuits
 
   source = "./modules/directconnect"
 
-  circuit = {
-    is_redundant         = var.edge["redundant"],
-    circuit_name         = each.value
-    vpc_id               = var.edge["equinix_fabric"][each.value]["vpc_id"]
-    csp_region           = var.edge["equinix_fabric"][each.value]["csp_region"]
-    transit_subnet_cidrs = var.edge["equinix_fabric"][each.value]["transit_subnet_cidrs"]
-    speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
-    equinix_metrocode    = var.edge["metro_code"]
-    customer_side_asn    = var.edge["customer_side_asn"]
-    edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
-    edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.value) + 3)
-    metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
-    notifications        = var.edge["notifications"]
-  }
+  circuit = each.value
 }
 
 module "expressroute" {
-  for_each = local.azure_transit_gws
+  for_each = local.exr_circuits
 
   source = "./modules/expressroute"
 
-  circuit = {
-    is_redundant         = var.edge["redundant"],
-    circuit_name         = each.value
-    vpc_id               = var.edge["equinix_fabric"][each.value]["vpc_id"]
-    csp_region           = var.edge["equinix_fabric"][each.value]["csp_region"]
-    transit_subnet_cidrs = var.edge["equinix_fabric"][each.value]["transit_subnet_cidrs"]
-    speed_in_mbit        = var.edge["equinix_fabric"][each.value]["speed"]
-    equinix_metrocode    = var.edge["metro_code"]
-    customer_side_asn    = var.edge["customer_side_asn"]
-    edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
-    edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.value) + 3)
-    metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
-    notifications        = var.edge["notifications"]
-  }
+  circuit = each.value
 }
 
 # GCP Terraform Provider for Interconnect is currently broken.
 # See the submodule for details.
 
 # module "cloudinterconnect" {
-#   for_each = local.gcp_transit_gws
+#   for_each = local.gcp_circuits
 
 #   source = "./modules/cloudinterconnect"
 
-#   circuit = {
-#     is_redundant         = var.edge["redundant"],
-#     circuit_name         = each.value
-#     vpc_id               = var.edge["equinix_fabric"][each.value]["vpc_id"]
-#     csp_region           = var.edge["equinix_fabric"][each.value]["csp_region"]
-#     speed_in_mbit        = var.edge["equinix_fabric"][each.value]["transit_subnet_cidrs"]
-#     equinix_metrocode    = var.edge["metro_code"]
-#     customer_side_asn    = var.edge["customer_side_asn"]
-#     edge_uuid            = coalescelist(var.equinix_edge_intermediary["edge_uuid"], equinix_network_device.this[*].id)
-#     edge_interface       = coalesce(var.equinix_edge_intermediary["edge_interface"], index(keys(var.edge["equinix_fabric"]), each.value) + 3)
-#     metal_service_tokens = var.equinix_edge_intermediary["metal_service_tokens"]
-#     notifications        = var.edge["notifications"]
-#   }
-# }
+#   circuit = each.value
 
 
 resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
