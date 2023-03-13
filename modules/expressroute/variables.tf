@@ -24,7 +24,7 @@ locals {
   peering_cidr  = cidrsubnet("169.254.0.0/16", 13, random_integer.peering_cidr.result)
   peering_cidrs = [cidrsubnet(local.peering_cidr, 1, 0), cidrsubnet(local.peering_cidr, 1, 1)]
 
-  azure_vnet_gateway_subnet_cidr = coalesce(var.circuit["azure_vnet_gateway_subnet_cidr"], cidrsubnet(data.azurerm_virtual_network.this.address_space[0], 4, 15), "none") #Grab last /27 in a /23
+  azure_vnet_gateway_subnet_cidr = coalesce(var.circuit["azure_vnet_gateway_subnet_cidr"], cidrsubnet(data.azurerm_virtual_network.this.address_space[0], 4, 3), "none") #Grab a /27 in a /23
 
   exr_peering_location1 = lookup(local.exr_location_lookup, var.circuit["equinix_metrocode"])
   exr_peering_location2 = coalesce(lookup(local.exr_location_lookup, "${var.circuit["equinix_metrocode"]}2", null), local.exr_peering_location1)

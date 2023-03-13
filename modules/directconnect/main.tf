@@ -75,7 +75,7 @@ resource "aws_dx_private_virtual_interface" "this" {
   name           = "${equinix_ecx_l2_connection.this[count.index].name}-pvif"
   vlan           = equinix_ecx_l2_connection.this[count.index].zside_vlan_stag
   address_family = "ipv4"
-  bgp_asn        = 64512
+  bgp_asn        = var.circuit["client_side_asn"]
   bgp_auth_key   = var.circuit["bgp_auth_key"]
   vpn_gateway_id = aws_vpn_gateway.this.id
 
