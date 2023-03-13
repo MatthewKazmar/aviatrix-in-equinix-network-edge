@@ -107,7 +107,7 @@ resource "equinix_ecx_l2_connection" "this" {
     content {
       name                = "${var.circuit["circuit_name"]}-2"
       device_uuid         = var.circuit["edge_uuid"][1]
-      device_interface_id = var.circuit["edge_interface"][1]
+      device_interface_id = var.circuit["edge_interface"]
       service_token       = var.circuit["metal_service_tokens"][1]
     }
   }
