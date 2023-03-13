@@ -46,7 +46,7 @@ resource "equinix_ecx_l2_connection" "this" {
 
   name                = "${var.circuit["circuit_name"]}-${count.index + 1}"
   profile_uuid        = data.equinix_ecx_l2_sellerprofile.this[count.index].id
-  speed               = var.circuit["speed_in_mbit"]
+  speed               = var.circuit["speed"]
   speed_unit          = "MB"
   notifications       = var.circuit["notifications"]
   device_uuid         = var.circuit["edge_uuid"][count.index]

@@ -6,7 +6,7 @@ variable "circuit" {
     transit_subnet_cidrs = list(string),
     csp_region           = string,
     equinix_metrocode    = string,
-    speed_in_mbit        = string,
+    speed                = string,
     edge_uuid            = optional(list(string), [null, null]),
     edge_interface       = optional(number, null),
     metal_service_tokens = optional(list(string), [null, null]),
