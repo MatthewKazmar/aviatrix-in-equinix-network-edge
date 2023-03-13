@@ -49,23 +49,24 @@ locals {
   # azure_transit_gws = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if v.cloud_type == 8 }
   # gcp_transit_gws   = { for k, v in var.edge["equinix_fabric"] : v.transit_gw => k if v.cloud_type == 4 }
 
-  edge_uuid = var.equinix_edge_intermediary["metal_service_tokens"] != null ? null : var.equinix_edge_intermediary["edge_uuid"] != [] ? var.equinix_edge_intermediary["edge_uuid"] : [equinix_network_device.this.id, equinix_network_device.this.redundant_id]
-
-  edge_interface = { for i, k in keys(var.edge["equinix_fabric"]) : k => var.equinix_edge_intermediary["metal_service_tokens"] != null ? null : i + 3 }
+  edge_uuid_interface = { for i, k in keys(var.edge["equinix_fabric"]) : k => {
+    uuid = var.equinix_edge_intermediary[k]["metal_service_tokens"] != null ? null : var.equinix_edge_intermediary[k]["edge_uuid"] != [] ? var.equinix_edge_intermediary[k]["edge_uuid"] : [equinix_network_device.this.id, equinix_network_device.this.redundant_id]
+    interface = var.equinix_edge_intermediary[k]["metal_service_tokens"] != null ? null : i + 3 }
+  }
 
   all_circuits = {
-    is_redundant         = var.edge["redundant"],
-    equinix_metrocode    = var.edge["metro_code"],
-    customer_side_asn    = var.edge["customer_side_asn"],
-    notifications        = var.edge["notifications"],
-    edge_uuid            = local.edge_uuid
+    is_redundant      = var.edge["redundant"],
+    equinix_metrocode = var.edge["metro_code"],
+    customer_side_asn = var.edge["customer_side_asn"],
+    notifications     = var.edge["notifications"]
   }
 
   dx_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
     local.all_circuits,
     v,
-    { circuit_name   = k,
-      edge_interface = local.edge_interface[k],
+    { circuit_name         = k,
+      edge_uuid            = local.edge_uuid_interface[k]["uuid"]
+      edge_interface       = local.edge_uuid_interface[k]["interface"],
       metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
   ) if v.cloud_type == 1 }
@@ -73,8 +74,9 @@ locals {
   exr_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
     local.all_circuits,
     v,
-    { circuit_name   = k,
-      edge_interface = local.edge_interface[k],
+    { circuit_name         = k,
+      edge_uuid            = local.edge_uuid_interface[k]["uuid"]
+      edge_interface       = local.edge_uuid_interface[k]["interface"],
       metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
     }
   ) if v.cloud_type == 8 }
@@ -82,7 +84,11 @@ locals {
   # gcp_circuits = { for k, v in var.edge["equinix_fabric"] : k => merge(
   #   local.all_circuits,
   #   v,
-  #   { circuit_name = k }
+  # { circuit_name   = k,
+  # edge_uuid = local.edge_uuid_interface[k]["uuid"]
+  #   edge_interface = local.edge_uuid_interface[k]["interface"],
+  #   metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
+  # }
   # ) if v.cloud_type == 4 }
 
   dx_output = try({ for k, v in module.directconnect : k =>
