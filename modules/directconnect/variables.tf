@@ -8,7 +8,6 @@ variable "circuit" {
     equinix_metrocode    = string,
     speed                = string,
     edge_uuid            = optional(list(string), [null, null]),
-    edge_interface       = optional(number, null),
     metal_service_tokens = optional(list(string), [null, null]),
     customer_side_asn    = number,
     vpc_asn              = optional(number, 64512),

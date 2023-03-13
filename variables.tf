@@ -67,7 +67,7 @@ locals {
     { circuit_name         = k,
       edge_uuid            = local.edge_uuid_interface[k]["uuid"]
       edge_interface       = local.edge_uuid_interface[k]["interface"],
-      metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
+      metal_service_tokens = lookup(var.equinix_edge_intermediary, k["metal_service_tokens"], null)
     }
   ) if v.cloud_type == 1 }
 
@@ -77,7 +77,7 @@ locals {
     { circuit_name         = k,
       edge_uuid            = local.edge_uuid_interface[k]["uuid"]
       edge_interface       = local.edge_uuid_interface[k]["interface"],
-      metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
+      metal_service_tokens = lookup(var.equinix_edge_intermediary, k["metal_service_tokens"], null)
     }
   ) if v.cloud_type == 8 }
 
@@ -87,7 +87,7 @@ locals {
   # { circuit_name   = k,
   # edge_uuid = local.edge_uuid_interface[k]["uuid"]
   #   edge_interface = local.edge_uuid_interface[k]["interface"],
-  #   metal_service_tokens = lookup(var.equinix_edge_intermediary, k, null)
+  #   metal_service_tokens = lookup(var.equinix_edge_intermediary, k["metal_service_tokens"], null)
   # }
   # ) if v.cloud_type == 4 }
 
