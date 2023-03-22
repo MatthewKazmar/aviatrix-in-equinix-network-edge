@@ -28,13 +28,6 @@ variable "edge" {
   })
 }
 
-variable "equinix_edge_intermediary" {
-  type = map(object({
-    edge_uuid            = optional(list(string), null),
-    metal_service_tokens = optional(list(string), null)
-  }))
-}
-
 locals {
   gw_names        = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
   site_id         = coalesce(var.edge["site_id"], "equinix-${var.edge["metro_code"]}")
