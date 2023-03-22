@@ -35,7 +35,9 @@ resource "equinix_network_device" "ne_intermediary" {
   }
 }
 
-resource "local_file" "ne_intermediary" {
+resource "local_file" "intermediary_neighbors" {
+  count = var.edge["intermediary_type"] != "none" ? 1 : 0
+
   content = jsonencode({ for k, v in module.csp_connections : k =>
     {
       asn            = v.csp_asn
