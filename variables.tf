@@ -59,7 +59,7 @@ locals {
     })
   }
 
-  csp_output = try({ for k, v in module.circuit : k =>
+  csp_output = try({ for k, v in module.csp_connections : k =>
     {
       csp_peering_addresses           = v.csp_peering_addresses,
       customer_side_peering_addresses = v.customer_side_peering_addresses
