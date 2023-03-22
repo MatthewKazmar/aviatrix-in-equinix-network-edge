@@ -18,7 +18,7 @@ terraform {
     }
     ansible = {
       #  version = "~> 0.0.1"
-      source = "terraform-ansible.com/ansibleprovider/ansible"
+      source  = "ansible/ansible"
     }
   }
 }
