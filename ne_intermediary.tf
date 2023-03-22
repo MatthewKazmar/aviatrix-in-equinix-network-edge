@@ -9,7 +9,7 @@ resource "tls_private_key" "ne_intermediary" {
 resource "local_sensitive_file" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
-  content  = one(tls_private_key.ne_intermediary.private_key_openssh)
+  content  = one(tls_private_key.ne_intermediary).private_key_openssh
   filename = "./${local.site_id}-ne-intermediary-private-key"
 }
 
@@ -31,14 +31,14 @@ resource "equinix_network_device" "ne_intermediary" {
 
   ssh_key {
     username = "admin"
-    key_name = one(tls_private_key.ne_intermediary.public_key_openssh)
+    key_name = one(tls_private_key.ne_intermediary).public_key_openssh
   }
 }
 
 resource "ansible_host" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
-  name = one(equinix_network_device.ne_intermediary.ssh_ip_fqdn)
+  name = one(equinix_network_device.ne_intermediary).ssh_ip_fqdn
 
   variables = {
     ansible_connection    = "ansible.netcommon.network_cli",
