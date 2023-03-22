@@ -53,7 +53,7 @@ locals {
       equinix_metrocode = var.edge["metro_code"],
       customer_side_asn = var.edge["customer_side_asn"],
       notifications     = var.edge["notifications"],
-      circuit_name      = length(local.edge_uuid) == 2 ? local.circuit_names[k] : [local_circuit_names[k][0]],
+      circuit_name      = length(local.edge_uuid) == 2 ? local.circuit_names[k] : [local.circuit_names[k][0]],
       edge_uuid         = var.edge["intermediary_type"] == "metal" ? null : local.edge_uuid,
       edge_interface    = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
     })
