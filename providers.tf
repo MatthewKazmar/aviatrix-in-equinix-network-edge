@@ -16,5 +16,9 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
     }
+    ansible = {
+      #  version = "~> 0.0.1"
+      source = "terraform-ansible.com/ansibleprovider/ansible"
+    }
   }
 }

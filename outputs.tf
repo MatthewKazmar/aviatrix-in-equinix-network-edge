@@ -6,7 +6,6 @@ output "equinix_network_device" {
   value = equinix_network_device.this
 }
 
-output "equinix_fabric" {
-  value = merge(local.dx_output, local.exr_output)
-  #value = merge(local.dx_output, local.exr_output, local.gcp_output)
+output "csp_connections" {
+  value = local.csp_output
 }

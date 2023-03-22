@@ -89,31 +89,13 @@ resource "equinix_network_device" "this" {
   }
 }
 
-module "directconnect" {
-  for_each = local.dx_circuits
+module "csp_connections" {
+  for_each = local.circuits
 
-  source = "./modules/directconnect"
-
-  circuit = each.value
-}
-
-module "expressroute" {
-  for_each = local.exr_circuits
-
-  source = "./modules/expressroute"
+  source = "github.com/MatthewKazmar/avx-private-underlay"
 
   circuit = each.value
 }
-
-# GCP Terraform Provider for Interconnect is currently broken.
-# See the submodule for details.
-
-# module "cloudinterconnect" {
-#   for_each = local.gcp_circuits
-
-#   source = "./modules/cloudinterconnect"
-
-#   circuit = each.value
 
 
 resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
