@@ -47,7 +47,7 @@ resource "ansible_host" "ne_intermediary" {
     ansible_become        = "yes",
     ansible_become_method = "enable",
     #export ANSIBLE_HOST_KEY_CHECKING=False
-    ansible_ssh_private_key_file = one(local_sensitive_file.ne_intermediary.filename),
+    ansible_ssh_private_key_file = one(local_sensitive_file.ne_intermediary).filename,
 
     neighbors = { for k, v in module.csp_connections : k =>
       {
