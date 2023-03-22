@@ -35,6 +35,18 @@ resource "equinix_network_device" "ne_intermediary" {
   }
 }
 
+resource "local_file" "ne_intermediary" {
+  content = jsonencode({ for k, v in module.csp_connections : k =>
+    {
+      asn            = v.csp_asn
+      interface_name = "GigabitEthernet${v.edge_interface}",
+      interface_ip   = values(v.customer_side_peering_addresses)[0],
+      csp_ip         = values(v.csp_side_peering_addresses)[0]
+    }
+  })
+  filename = "./neighbors.json"
+}
+
 resource "ansible_host" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
@@ -47,15 +59,6 @@ resource "ansible_host" "ne_intermediary" {
     ansible_become        = "yes",
     ansible_become_method = "enable",
     #export ANSIBLE_HOST_KEY_CHECKING=False
-    ansible_ssh_private_key_file = one(local_sensitive_file.ne_intermediary).filename,
-
-    neighbors = { for k, v in module.csp_connections : k =>
-      {
-        asn            = v.csp_asn
-        interface_name = "GigabitEthernet${v.edge_interface}",
-        interface_ip   = values(v.customer_side_peering_addresses)[0],
-        csp_ip         = values(v.csp_side_peering_addresses)[0]
-      }
-    }
+    ansible_ssh_private_key_file = one(local_sensitive_file.ne_intermediary).filename
   }
 }
