@@ -44,7 +44,7 @@ locals {
   circuit_names = { for k, v in var.edge["csp_connections"] : k => v.redundant || v.cloud_type == 8 ? ["${k}-pri", "${k}-sec"] : [k] }
   # Interface starts with 3. Will improve with Avx 7.1
   edge_interface_index = { for i, k in keys(var.edge["csp_connections"]) : k => i + 3 }
-  edge_uuid            = var.edge["intermediary_type"] == "network_edge" ? [equinix_network_device.ne_intermediary.uuid] : equinix_network_device.this[*].uuid
+  edge_uuid            = var.edge["intermediary_type"] == "network_edge" ? [one(equinix_network_device.ne_intermediary).uuid] : equinix_network_device.this[*].uuid
 
   circuits = { for k, v in var.edge["csp_connections"] : k => merge(
     v,
