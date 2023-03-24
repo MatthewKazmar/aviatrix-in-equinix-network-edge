@@ -22,7 +22,7 @@ resource "equinix_network_device" "ne_intermediary" {
   byol            = true
   self_managed    = true
   core_count      = var.edge["core_count"]
-  package_code    = "network-essentials"
+  package_code    = "dna-essentials"
   version         = "17.06.01a"
   name            = "${var.edge["gw_name"]}-int"
   notifications   = var.edge["notifications"]
