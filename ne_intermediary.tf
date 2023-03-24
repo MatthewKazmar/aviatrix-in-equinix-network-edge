@@ -18,11 +18,11 @@ resource "equinix_network_device" "ne_intermediary" {
 
   metro_code      = data.equinix_network_account.this.metro_code
   account_number  = data.equinix_network_account.this.number
-  type_code       = var.edge["type_code"]
+  type_code       = "C8000V"
   byol            = true
   self_managed    = true
   core_count      = var.edge["core_count"]
-  package_code    = "dna-essentials"
+  package_code    = "network-essentials"
   version         = "17.06.01a"
   name            = "${var.edge["gw_name"]}-int"
   notifications   = var.edge["notifications"]
