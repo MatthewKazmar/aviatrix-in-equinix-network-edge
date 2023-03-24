@@ -9,7 +9,7 @@ resource "tls_private_key" "ne_intermediary" {
 resource "equinix_network_ssh_key" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
-  name = local.ne_intermediary_name
+  name       = local.ne_intermediary_name
   public_key = one(tls_private_key.ne_intermediary).public_key_openssh
 }
 
@@ -39,7 +39,7 @@ resource "equinix_network_device" "ne_intermediary" {
 
   ssh_key {
     username = "admin"
-    key_name = one(tls_private_key.ne_intermediary).public_key_openssh
+    key_name = one(equinix_network_ssh_key.ne_intermediary).name
   }
 }
 

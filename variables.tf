@@ -28,7 +28,7 @@ variable "edge" {
 }
 
 locals {
-  gw_names = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
+  gw_names             = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
   ne_intermediary_name = "${var.edge["gw_name"]}-int"
 
   wan_prefixlen = split("/", var.edge["wan_interface_ip_prefix"])[1]
