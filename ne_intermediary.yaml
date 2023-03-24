@@ -21,7 +21,7 @@
   - name: Configure BGP
     cisco.ios.ios_bgp_global:
       config:
-        as_number: 64496
+        as_number: "{{ config.customer_side_asn }}"
         router_id: 
         - address: "{{ config.wan_ip }}"
         log_neighbor_changes:

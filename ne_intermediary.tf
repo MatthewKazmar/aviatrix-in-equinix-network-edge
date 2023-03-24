@@ -47,8 +47,9 @@ resource "local_file" "intermediary_config" {
       asn = v.csp_asn
       ip  = values(v.csp_side_peering_addresses)[0]
     }],
-    wan_ip      = "${local.wan_default}/${local.wan_prefixlen}"
-    wan_network = var.edge["wan_interface_ip_prefix"]
+    wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
+    wan_network       = var.edge["wan_interface_ip_prefix"],
+    customer_side_asn = var.edge["customer_side_asn"]
   })
   filename = "./config.json"
 }
