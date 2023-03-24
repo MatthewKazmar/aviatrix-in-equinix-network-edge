@@ -7,9 +7,9 @@ resource "aviatrix_edge_spoke" "this" {
   management_interface_config    = "Static"
   management_interface_ip_prefix = "192.168.10.101/24"
   management_default_gateway_ip  = "192.168.10.254"
-  wan_interface_ip_prefix        = var.edge["wan_interface_ip_prefixes"][count.index]
-  wan_default_gateway_ip         = var.edge["wan_default_gateway_ip"]
-  lan_interface_ip_prefix        = var.edge["lan_interface_ip_prefixes"][count.index]
+  wan_interface_ip_prefix        = local.wan_ips[count.index]
+  wan_default_gateway_ip         = local.wan_default
+  lan_interface_ip_prefix        = local.lan_ips[count.index]
   dns_server_ip                  = local.dns_server_ips[0]
   secondary_dns_server_ip        = local.dns_server_ips[1]
   ztp_file_type                  = "cloud-init"

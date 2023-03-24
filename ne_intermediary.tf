@@ -35,18 +35,22 @@ resource "equinix_network_device" "ne_intermediary" {
   }
 }
 
-resource "local_file" "intermediary_neighbors" {
+resource "local_file" "intermediary_config" {
   count = var.edge["intermediary_type"] != "none" ? 1 : 0
 
-  content = jsonencode({ for k, v in module.csp_connections : k =>
-    {
-      asn            = v.csp_asn
-      interface_name = "GigabitEthernet${v.edge_interface}",
-      interface_ip   = values(v.customer_side_peering_addresses)[0],
-      csp_ip         = values(v.csp_side_peering_addresses)[0]
-    }
+  content = jsonencode({
+    interfaces = [for k, v in module.csp_connections : {
+      name = "GigabitEthernet${v.edge_interface}",
+      ip   = values(v.customer_side_peering_addresses)[0]
+    }],
+    neighbors = [for k, v in module.csp_connections : {
+      asn = v.csp_asn
+      ip  = values(v.csp_side_peering_addresses)[0]
+    }],
+    wan_ip      = "${local.wan_default}/${local.wan_prefixlen}"
+    wan_network = var.edge["wan_interface_ip_prefix"]
   })
-  filename = "./neighbors.json"
+  filename = "./config.json"
 }
 
 resource "ansible_host" "ne_intermediary" {

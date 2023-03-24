@@ -1,22 +1,21 @@
 variable "edge" {
   type = object({
-    gw_name                   = string,
-    site_id                   = optional(string, ""),
-    redundant                 = optional(bool, false),
-    type                      = string,
-    intermediary_type         = optional(string, "none")
-    wan_interface_ip_prefixes = list(string),
-    wan_default_gateway_ip    = string,
-    lan_interface_ip_prefixes = list(string),
-    dns_server_ips            = optional(list(string), ["8.8.8.8", "1.1.1.1"])
-    customer_side_asn         = number,
-    metro_code                = string,
-    type_code                 = optional(string, "AVIATRIX_EDGE"),
-    package_code              = optional(string, "STD")
-    device_version            = optional(string, "6.9"),
-    core_count                = optional(number, 2),
-    term_length               = optional(number, 1),
-    notifications             = list(string),
+    gw_name                 = string,
+    site_id                 = optional(string, ""),
+    redundant               = optional(bool, false),
+    type                    = string,
+    intermediary_type       = optional(string, "none")
+    wan_interface_ip_prefix = string,
+    lan_interface_ip_prefix = string,
+    dns_server_ips          = optional(list(string), ["8.8.8.8", "1.1.1.1"])
+    customer_side_asn       = number,
+    metro_code              = string,
+    type_code               = optional(string, "AVIATRIX_EDGE"),
+    package_code            = optional(string, "STD")
+    device_version          = optional(string, "6.9"),
+    core_count              = optional(number, 2),
+    term_length             = optional(number, 1),
+    notifications           = list(string),
     csp_connections = optional(map(object({
       speed                = number,
       cloud_type           = number,
@@ -29,7 +28,15 @@ variable "edge" {
 }
 
 locals {
-  gw_names        = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
+  gw_names = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
+
+  wan_prefixlen = split("/", var.edge["wan_interface_ip_prefix"])[1]
+  wan_ips       = ["${cidrhost(var.edge["wan_interface_ip_prefix"], 2)}/${local.lan_prefixlen}", "${cidrhost(var.edge["wan_interface_ip_prefix"], 3)}/${local.lan_prefixlen}"]
+  wan_default   = cidrhost(var.edge["wan_interface_ip_prefix"], 1)
+
+  lan_prefixlen = split("/", var.edge["lan_interface_ip_prefix"])[1]
+  lan_ips       = ["${cidrhost(var.edge["lan_interface_ip_prefix"], 2)}/${local.lan_prefixlen}", "${cidrhost(var.edge["lan_interface_ip_prefix"], 3)}/${local.lan_prefixlen}"]
+
   site_id         = coalesce(var.edge["site_id"], "equinix-${var.edge["metro_code"]}")
   acl_name        = "${var.edge["gw_name"]}-acl"
   acl_description = "ACL for ${var.edge["gw_name"]}, primary and ha (if deployed.)"
