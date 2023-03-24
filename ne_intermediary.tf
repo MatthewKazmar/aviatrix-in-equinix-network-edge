@@ -25,6 +25,7 @@ resource "equinix_network_device" "ne_intermediary" {
   package_code    = "network-essentials"
   version         = "17.06.01a"
   name            = "${var.edge["gw_name"]}-int"
+  hostname        = "${var.edge["gw_name"]}-int"
   notifications   = var.edge["notifications"]
   term_length     = var.edge["term_length"]
   acl_template_id = equinix_network_acl_template.this.id
