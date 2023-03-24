@@ -29,6 +29,7 @@ variable "edge" {
 
 locals {
   gw_names = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
+  ne_intermediary_name = "${var.edge["gw_name"]}-int"
 
   wan_prefixlen = split("/", var.edge["wan_interface_ip_prefix"])[1]
   wan_ips       = ["${cidrhost(var.edge["wan_interface_ip_prefix"], 2)}/${local.lan_prefixlen}", "${cidrhost(var.edge["wan_interface_ip_prefix"], 3)}/${local.lan_prefixlen}"]

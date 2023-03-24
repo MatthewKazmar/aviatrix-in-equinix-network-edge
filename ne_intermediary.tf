@@ -6,6 +6,13 @@ resource "tls_private_key" "ne_intermediary" {
   rsa_bits  = 4096
 }
 
+resource "equinix_network_ssh_key" "ne_intermediary" {
+  count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
+
+  name = local.ne_intermediary_name
+  public_key = one(tls_private_key.ne_intermediary).public_key_openssh
+}
+
 resource "local_sensitive_file" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
@@ -24,8 +31,8 @@ resource "equinix_network_device" "ne_intermediary" {
   core_count      = var.edge["core_count"]
   package_code    = "network-essentials"
   version         = "17.06.01a"
-  name            = "${var.edge["gw_name"]}-int"
-  hostname        = "${var.edge["gw_name"]}-int"
+  name            = local.ne_intermediary_name
+  hostname        = local.ne_intermediary_name
   notifications   = var.edge["notifications"]
   term_length     = var.edge["term_length"]
   acl_template_id = equinix_network_acl_template.this.id
