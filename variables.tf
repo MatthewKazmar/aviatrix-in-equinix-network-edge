@@ -17,12 +17,12 @@ variable "edge" {
     term_length             = optional(number, 1),
     notifications           = list(string),
     csp_connections = optional(map(object({
-      speed                = number,
-      cloud_type           = number,
-      transit_gw           = string,
-      vpc_id               = string,
-      transit_subnet_cidrs = list(string),
-      csp_region           = string
+      speed      = number,
+      cloud_type = number,
+      transit_gw = string,
+      vpc_id     = string,
+      rtb        = optional(string),
+      csp_region = string
     })), {})
   })
 }

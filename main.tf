@@ -106,9 +106,9 @@ resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment" {
 
   number_of_retries = 3
 
-  # depends_on = [
-  #   module.csp_connections
-  # ]
+  depends_on = [
+    module.csp_connections
+  ]
 }
 
 resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment_ha" {
@@ -119,7 +119,7 @@ resource "aviatrix_edge_spoke_transit_attachment" "edge_attachment_ha" {
 
   number_of_retries = 3
 
-  # depends_on = [
-  #   module.csp_connections
-  # ]
+  depends_on = [
+    module.csp_connections
+  ]
 }
