@@ -51,8 +51,8 @@ resource "equinix_network_device_link" "ne_intermediary" {
   dynamic "device" {
     for_each = local.ne_intermediary_link
     content {
-      id           = device.value
-      interface_id = lookup(local.ne_intermediary_link, device.value)
+      id           = device.key
+      interface_id = device.value
     }
   }
 }
