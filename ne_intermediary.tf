@@ -49,7 +49,7 @@ resource "equinix_network_device_link" "ne_intermediary" {
   name = "${local.ne_intermediary_name}-link"
 
   dynamic "device" {
-    for_each = merge({ for u in local.avx_edge_uuid : u => 1 }, { one(equinix_network_device.ne_intermediary).uuid = 9 })
+    for_each = local.ne_intermediary_link
     content {
       id           = device.key
       interface_id = device.value

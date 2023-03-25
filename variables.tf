@@ -28,8 +28,8 @@ variable "edge" {
 }
 
 locals {
-  gw_names             = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
-  ne_intermediary_name = "${var.edge["gw_name"]}-int"
+  gw_names = [var.edge["gw_name"], "${var.edge["gw_name"]}-ha"]
+
 
   wan_prefixlen = split("/", var.edge["wan_interface_ip_prefix"])[1]
   wan_ips       = ["${cidrhost(var.edge["wan_interface_ip_prefix"], 2)}/${local.lan_prefixlen}", "${cidrhost(var.edge["wan_interface_ip_prefix"], 3)}/${local.lan_prefixlen}"]
@@ -48,6 +48,9 @@ locals {
   transit_gws    = [for k, v in var.edge["csp_connections"] : v.transit_gw]
   transit_gws_ha = var.edge["redundant"] ? local.transit_gws : []
 
+  # Intermediary
+  ne_intermediary_name = "${var.edge["gw_name"]}-int"
+  ne_intermediary_link = merge({ for u in local.avx_edge_uuid : u => 1 }, { one(equinix_network_device.ne_intermediary).uuid = 9 })
 
   # Redundant or Azure gets 2 circuits.
   circuit_names = { for k, v in var.edge["csp_connections"] : k => v.redundant || v.cloud_type == 8 ? ["${k}-pri", "${k}-sec"] : [k] }
