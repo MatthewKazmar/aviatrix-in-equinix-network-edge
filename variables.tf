@@ -78,7 +78,7 @@ locals {
       circuit_device_map = local.circuit_uuid_map[k]
       # circuit_name      = length(local.csp_edge_uuid) == 2 ? local.circuit_names[k] : [local.circuit_names[k][0]],
       # edge_uuid         = var.edge["intermediary_type"] == "metal" ? null : local.csp_edge_uuid,
-      # edge_interface    = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
+      edge_interface = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
     })
   }
 
