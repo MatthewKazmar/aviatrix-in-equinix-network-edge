@@ -71,7 +71,7 @@ resource "local_file" "intermediary_config" {
       ip   = values(v.customer_side_peering_addresses)[0]
     }],
     neighbors = [for k, v in module.csp_connections : {
-      asn = v.csp_asn
+      asn = v.csp_side_asn
       ip  = values(v.csp_side_peering_addresses)[0]
     }],
     wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
