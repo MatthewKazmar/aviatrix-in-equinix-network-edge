@@ -53,22 +53,35 @@ locals {
   #ne_intermediary_link = merge({ for u in local.avx_edge_uuid : u => 1 }, { (one(equinix_network_device.ne_intermediary).uuid) = 9 })
   ne_intermediary_link = { for u in local.avx_edge_uuid : u => 1 }
   # Redundant or Azure gets 2 circuits.
-  circuit_names = { for k, v in var.edge["csp_connections"] : k => var.edge["redundant"] || v["cloud_type"] == 8 ? ["${k}-pri", "${k}-sec"] : [k] }
+  is_redundant        = (var.edge["redundant"] || v["cloud_type"] == 8)
+  is_really_redundant = local.redundant && !var.edge["intermediary"]
+
+  circuit_names = { for k, v in var.edge["csp_connections"] : k => local.is_redundant ? ["${k}-pri", "${k}-sec"] : [k] }
+
   # Interface starts with 3. Will improve with Avx 7.1
   edge_interface_index = { for i, k in keys(var.edge["csp_connections"]) : k => i + 3 }
   avx_edge_uuid        = concat([equinix_network_device.this.uuid], equinix_network_device.this.secondary_device[*].uuid)
   csp_edge_uuid        = var.edge["intermediary_type"] == "network_edge" ? [one(equinix_network_device.ne_intermediary).uuid] : local.avx_edge_uuid
+
+  circuit_uuid_map = {
+    for k, v in var.edge["csp_connections"] : k => {
+      for i, u in local.csp_edge_uuid : (local.circuit_names[k][i]) => u
+    }
+  }
+
+
   circuits = { for k, v in var.edge["csp_connections"] : k => merge(
     v,
     {
-      is_redundant      = var.edge["redundant"],
-      equinix_metrocode = var.edge["metro_code"],
-      customer_side_asn = var.edge["customer_side_asn"],
-      notifications     = var.edge["notifications"],
-      base_circuit_name = k,
-      circuit_name      = length(local.avx_edge_uuid) == 2 ? local.circuit_names[k] : [local.circuit_names[k][0]],
-      edge_uuid         = var.edge["intermediary_type"] == "metal" ? null : local.csp_edge_uuid,
-      edge_interface    = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
+      device_type        = "network-edge",
+      equinix_metrocode  = var.edge["metro_code"],
+      customer_side_asn  = var.edge["customer_side_asn"],
+      notifications      = var.edge["notifications"],
+      base_circuit_name  = k,
+      circuit_device_map = local.circuit_uuid_map[k]
+      # circuit_name      = length(local.csp_edge_uuid) == 2 ? local.circuit_names[k] : [local.circuit_names[k][0]],
+      # edge_uuid         = var.edge["intermediary_type"] == "metal" ? null : local.csp_edge_uuid,
+      # edge_interface    = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
     })
   }
 
