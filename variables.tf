@@ -53,7 +53,7 @@ locals {
   #ne_intermediary_link = merge({ for u in local.avx_edge_uuid : u => 1 }, { (one(equinix_network_device.ne_intermediary).uuid) = 9 })
   ne_intermediary_link = { for u in local.avx_edge_uuid : u => 1 }
   # Redundant or Azure gets 2 circuits.
-  circuit_names = { for k, v in var.edge["csp_connections"] : k => v.redundant || v.cloud_type == 8 ? ["${k}-pri", "${k}-sec"] : [k] }
+  circuit_names = { for k, v in var.edge["csp_connections"] : k => var.edge["redundant"] || var.edge["cloud_type"] == 8 ? ["${k}-pri", "${k}-sec"] : [k] }
   # Interface starts with 3. Will improve with Avx 7.1
   edge_interface_index = { for i, k in keys(var.edge["csp_connections"]) : k => i + 3 }
   avx_edge_uuid        = concat([equinix_network_device.this.uuid], equinix_network_device.this.secondary_device[*].uuid)
