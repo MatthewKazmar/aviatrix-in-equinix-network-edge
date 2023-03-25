@@ -55,6 +55,11 @@ resource "equinix_network_device_link" "ne_intermediary" {
       interface_id = device.value
     }
   }
+
+  device {
+    id           = one(equinix_network_device.ne_intermediary).uuid
+    interface_id = 9
+  }
 }
 
 resource "local_file" "intermediary_config" {
