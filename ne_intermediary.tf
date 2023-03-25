@@ -43,6 +43,20 @@ resource "equinix_network_device" "ne_intermediary" {
   }
 }
 
+resource "equinix_network_device_link" "ne_intermediary" {
+  count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
+
+  name = "${local.ne_intermediary_name}-link"
+
+  dynamic "device" {
+    for_each = merge({ for u in local.avx_edge_uuid : u => 1 }, { equinix_network_device.ne_intermediary.uuid = 9 })
+    content {
+      id           = device.key
+      interface_id = device.value
+    }
+  }
+}
+
 resource "local_file" "intermediary_config" {
   count = var.edge["intermediary_type"] != "none" ? 1 : 0
 
