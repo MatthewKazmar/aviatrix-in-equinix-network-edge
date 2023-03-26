@@ -59,7 +59,7 @@ locals {
   # Interface starts with 3. Will improve with Avx 7.1
   edge_interface_index = { for i, k in keys(var.edge["csp_connections"]) : k => i + 3 }
   avx_edge_uuid        = concat([equinix_network_device.this.uuid], equinix_network_device.this.secondary_device[*].uuid)
-  csp_edge_uuid        = var.edge["intermediary_type"] == "network_edge" ? [one(equinix_network_device.ne_intermediary).uuid] : local.avx_edge_uuid
+  csp_edge_uuid        = var.edge["intermediary_type"] == "network-edge" ? [one(equinix_network_device.ne_intermediary).uuid] : local.avx_edge_uuid
 
   circuit_uuid_map = {
     for k, v in var.edge["csp_connections"] : k => {
@@ -78,7 +78,7 @@ locals {
       circuit_device_map = local.circuit_uuid_map[k]
       # circuit_name      = length(local.csp_edge_uuid) == 2 ? local.circuit_names[k] : [local.circuit_names[k][0]],
       # edge_uuid         = var.edge["intermediary_type"] == "metal" ? null : local.csp_edge_uuid,
-      edge_interface = var.edge["intermediary_type"] == "metal" ? null : local.edge_interface_index[k]
+      edge_interface = local.edge_interface_index[k]
     })
   }
 
