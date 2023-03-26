@@ -11,6 +11,10 @@ resource "equinix_network_ssh_key" "ne_intermediary" {
 
   name       = local.ne_intermediary_name
   public_key = one(tls_private_key.ne_intermediary).public_key_openssh
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "local_sensitive_file" "ne_intermediary" {
