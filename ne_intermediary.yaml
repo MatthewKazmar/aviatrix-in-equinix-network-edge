@@ -3,10 +3,6 @@
   hosts: all
 
   tasks:
-  - name: Load interface and neighbor config
-    ansible.builtin.include_vars:
-      file: config.json
-      name: config
   - name: Configure customer side interfaces
     cisco.ios.ios_l3_interfaces:
       config:
