@@ -66,24 +66,24 @@ resource "equinix_network_device_link" "ne_intermediary" {
   }
 }
 
-resource "local_file" "intermediary_config" {
-  count = var.edge["intermediary_type"] != "none" ? 1 : 0
+# resource "local_file" "intermediary_config" {
+#   count = var.edge["intermediary_type"] != "none" ? 1 : 0
 
-  content = jsonencode({
-    interfaces = [for k, v in module.csp_connections : {
-      name = "GigabitEthernet${v.edge_interface}",
-      ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]
-    }],
-    neighbors = [for k, v in module.csp_connections : {
-      asn = v.csp_side_asn
-      ip  = split("/", values(v.csp_side_peering_addresses)[0])[0]
-    }],
-    wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
-    wan_network       = var.edge["wan_interface_ip_prefix"],
-    customer_side_asn = var.edge["customer_side_asn"]
-  })
-  filename = "./config.json"
-}
+#   content = jsonencode({
+#     interfaces = [for k, v in module.csp_connections : {
+#       name = "GigabitEthernet${v.edge_interface}",
+#       ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]
+#     }],
+#     neighbors = [for k, v in module.csp_connections : {
+#       asn = v.csp_side_asn
+#       ip  = split("/", values(v.csp_side_peering_addresses)[0])[0]
+#     }],
+#     wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
+#     wan_network       = var.edge["wan_interface_ip_prefix"],
+#     customer_side_asn = var.edge["customer_side_asn"]
+#   })
+#   filename = "./config.json"
+# }
 
 resource "ansible_host" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
@@ -99,7 +99,7 @@ resource "ansible_host" "ne_intermediary" {
     ansible_become_method = "enable",
     #export ANSIBLE_HOST_KEY_CHECKING=False
     ansible_ssh_private_key_file = nonsensitive(one(local_sensitive_file.ne_intermediary).filename)
-    config = jsonencode({
+    config = {
       interfaces = [for k, v in module.csp_connections : {
         name = "GigabitEthernet${v.edge_interface}",
         ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]
@@ -111,6 +111,6 @@ resource "ansible_host" "ne_intermediary" {
       wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
       wan_network       = var.edge["wan_interface_ip_prefix"],
       customer_side_asn = var.edge["customer_side_asn"]
-    })
+    }
   }
 }
