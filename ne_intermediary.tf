@@ -85,6 +85,8 @@ resource "equinix_network_device_link" "ne_intermediary" {
 #   filename = "./config.json"
 # }
 
+#export ANSIBLE_HOST_KEY_CHECKING=False
+#ansible-pylibssh not installed, falling back to paramiko; pip install --user ansible-pylibssh
 resource "ansible_host" "ne_intermediary" {
   count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
@@ -92,14 +94,13 @@ resource "ansible_host" "ne_intermediary" {
   groups = ["eqx"]
 
   variables = {
-    ansible_connection    = "ansible.netcommon.network_cli",
-    ansible_network_os    = "cisco.ios.ios",
-    ansible_user          = "admin",
-    ansible_become        = "yes",
-    ansible_become_method = "enable",
-    #export ANSIBLE_HOST_KEY_CHECKING=False
+    ansible_connection           = "ansible.netcommon.network_cli",
+    ansible_network_os           = "cisco.ios.ios",
+    ansible_user                 = "admin",
+    ansible_become               = "yes",
+    ansible_become_method        = "enable",
     ansible_ssh_private_key_file = nonsensitive(one(local_sensitive_file.ne_intermediary).filename)
-    config = jsonencode({
+    config_json = jsonencode({
       interfaces = [for k, v in module.csp_connections : {
         name = "GigabitEthernet${v.edge_interface}",
         ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]

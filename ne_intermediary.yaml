@@ -1,8 +1,11 @@
 ---
 - name: Configure NE Intermediary
-  hosts: all
+  hosts: eqx
 
   tasks:
+  - name: convert config json to dict
+    ansible.builtin.set_fact:
+      config: "{{ config_json | from_json }}"
   - name: Configure customer side interfaces
     cisco.ios.ios_l3_interfaces:
       config:
@@ -12,21 +15,21 @@
       - name: "GigabitEthernet9"
         ipv4:
         - address: "{{ config.wan_ip }}"
-    loop: {{ config.interfaces }}
-    operation: merge
+      loop: "{{ item.interfaces }}"
+      operation: merge
   - name: Configure BGP
     cisco.ios.ios_bgp_global:
       config:
-        as_number: "{{ config.customer_side_asn }}"
+        as_number: "{{ item.customer_side_asn }}"
         router_id: 
-        - address: "{{ config.wan_ip }}"
+        - address: "{{ item.wan_ip }}"
         log_neighbor_changes:
           set: true
         neighbors:
         - neighbor_address: "{{ item.ip }}"
           activate: true
           remote_as: "{{ item.asn }}"
-        loop: {{ config }}
         networks:
         - address: "{{ config.wan_network }}"
+      loop: "{{ config.neighbors }}"
       operation: merge
