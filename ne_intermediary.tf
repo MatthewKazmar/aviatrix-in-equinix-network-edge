@@ -111,7 +111,8 @@ resource "ansible_host" "ne_intermediary" {
       }],
       wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
       wan_network       = var.edge["wan_interface_ip_prefix"],
-      customer_side_asn = var.edge["customer_side_asn"]
+      customer_side_asn = var.edge["customer_side_asn"],
+      router_id         = local.wan_default
     })
   }
 }

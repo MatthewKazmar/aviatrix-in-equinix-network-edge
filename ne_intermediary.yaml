@@ -16,13 +16,12 @@
         ipv4:
         - address: "{{ config.wan_ip }}"
       loop: "{{ config.interfaces }}"
-      operation: merge
   - name: Configure BGP
     cisco.ios.ios_bgp_global:
       config:
-        as_number: "{{ item.customer_side_asn }}"
+        as_number: "{{ config.customer_side_asn }}"
         router_id: 
-        - address: "{{ item.wan_ip }}"
+        - address: "{{ config.router_id }}"
         log_neighbor_changes:
           set: true
         neighbors:
@@ -32,4 +31,3 @@
         networks:
         - address: "{{ config.wan_network }}"
       loop: "{{ config.neighbors }}"
-      operation: merge
