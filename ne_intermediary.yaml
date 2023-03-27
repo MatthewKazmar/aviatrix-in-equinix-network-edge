@@ -15,7 +15,7 @@
       - name: "GigabitEthernet9"
         ipv4:
         - address: "{{ config.wan_ip }}"
-      loop: "{{ item.interfaces }}"
+      loop: "{{ config.interfaces }}"
       operation: merge
   - name: Configure BGP
     cisco.ios.ios_bgp_global:

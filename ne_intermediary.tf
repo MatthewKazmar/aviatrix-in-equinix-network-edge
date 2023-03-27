@@ -103,7 +103,7 @@ resource "ansible_host" "ne_intermediary" {
     config_json = jsonencode({
       interfaces = [for k, v in module.csp_connections : {
         name = "GigabitEthernet${v.edge_interface}",
-        ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]
+        ip   = values(v.customer_side_peering_addresses)[0]
       }],
       neighbors = [for k, v in module.csp_connections : {
         asn = v.csp_side_asn
