@@ -86,9 +86,10 @@ resource "local_file" "intermediary_config" {
 }
 
 resource "ansible_host" "ne_intermediary" {
-  #count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
+  count = var.edge["intermediary_type"] == "network-edge" ? 1 : 0
 
-  name = one(equinix_network_device.ne_intermediary).ssh_ip_fqdn
+  name   = one(equinix_network_device.ne_intermediary).ssh_ip_fqdn
+  groups = ["eqx"]
 
   variables = {
     ansible_connection    = "ansible.netcommon.network_cli",
