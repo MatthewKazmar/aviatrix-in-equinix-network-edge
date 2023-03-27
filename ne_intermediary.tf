@@ -72,11 +72,11 @@ resource "local_file" "intermediary_config" {
   content = jsonencode({
     interfaces = [for k, v in module.csp_connections : {
       name = "GigabitEthernet${v.edge_interface}",
-      ip   = values(v.customer_side_peering_addresses)[0]
+      ip   = split("/", values(v.customer_side_peering_addresses)[0])[0]
     }],
     neighbors = [for k, v in module.csp_connections : {
       asn = v.csp_side_asn
-      ip  = values(v.csp_side_peering_addresses)[0]
+      ip  = split("/", values(v.csp_side_peering_addresses)[0])[0]
     }],
     wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
     wan_network       = var.edge["wan_interface_ip_prefix"],
