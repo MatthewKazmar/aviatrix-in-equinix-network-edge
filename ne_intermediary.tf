@@ -106,8 +106,9 @@ resource "ansible_host" "ne_intermediary" {
         ip   = values(v.customer_side_peering_addresses)[0]
       }],
       neighbors = [for k, v in module.csp_connections : {
-        asn = v.csp_side_asn
-        ip  = split("/", values(v.csp_side_peering_addresses)[0])[0]
+        asn      = v.csp_side_asn
+        ip       = split("/", values(v.csp_side_peering_addresses)[0])[0]
+        auth_key = v.bgp_auth_key
       }],
       wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
       wan_network       = split("/", var.edge["wan_interface_ip_prefix"])[0],

@@ -34,4 +34,7 @@
         - neighbor_address: "{{ item.ip }}"
           activate: true
           remote_as: "{{ item.asn }}"
+          password_options:
+            encryption: 7
+            pass_key: "{{ item.auth_key }}"
     loop: "{{ config.neighbors }}"
