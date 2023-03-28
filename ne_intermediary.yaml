@@ -12,13 +12,18 @@
       - name: "{{ item.name }}"
         ipv4:
         - address: "{{ item.ip }}"
-    loop: "{{ config.interfaces }}"
-  - name: configure wan side for Avx edge
-    cisco.ios.ios_l3_interfaces:
-      config:
       - name: "GigabitEthernet9"
         ipv4:
         - address: "{{ config.wan_ip }}"
+    loop: "{{ config.interfaces }}"
+  - name: turn up interfaces
+    cisco.ios.ios_interfaces:
+      config:
+      - name: "{{ item.name }}"
+        enabled: true
+      - name: "GigabitEthernet9"
+        enabled: true
+    loop: "{{ config.interfaces }}"
   - name: Configure BGP globals
     cisco.ios.ios_bgp_global:
       config:
@@ -35,6 +40,9 @@
           activate: true
           remote_as: "{{ item.asn }}"
           password_options:
-            encryption: 7
+            encryption: 0
             pass_key: "{{ item.auth_key }}"
     loop: "{{ config.neighbors }}"
+  - name: Save running to startup when modified
+    cisco.ios.ios_config:
+      save_when: modified
