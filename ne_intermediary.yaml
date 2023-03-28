@@ -6,13 +6,13 @@
   - name: convert config json to dict
     ansible.builtin.set_fact:
       config: "{{ config_json | from_json }}"
-  # - name: Configure customer side interfaces
-  #   cisco.ios.ios_l3_interfaces:
-  #     config:
-  #     - name: "{{ item.name }}"
-  #       ipv4:
-  #       - address: "{{ item.ip }}"
-  #       loop: "{{ config.interfaces }}"
+  - name: Configure customer side interfaces
+    cisco.ios.ios_l3_interfaces:
+      config:
+      - name: "{{ item.name }}"
+        ipv4:
+        - address: "{{ item.ip }}"
+    loop: "{{ config.interfaces }}"
   - name: configure wan side for Avx edge
     cisco.ios.ios_l3_interfaces:
       config:
@@ -29,11 +29,9 @@
           log_neighbor_changes: true
         networks:
         - address: "{{ config.wan_network }}"
-  # - name: Configure BGP neighbors.
-  #   cisco.ios.ios_bgp_global:
-  #     config:
-  #       neighbors:
-  #       - neighbor_address: "{{ item.ip }}"
-  #         activate: true
-  #         remote_as: "{{ item.asn }}"
-  #         loop: "{{ config.neighbors }}"
+          netmask: "{{ config.wan_netmask }}"
+        neighbors:
+        - neighbor_address: "{{ item.ip }}"
+          activate: true
+          remote_as: "{{ item.asn }}"
+    loop: "{{ config.neighbors }}"
