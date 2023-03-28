@@ -110,7 +110,8 @@ resource "ansible_host" "ne_intermediary" {
         ip  = split("/", values(v.csp_side_peering_addresses)[0])[0]
       }],
       wan_ip            = "${local.wan_default}/${local.wan_prefixlen}",
-      wan_network       = var.edge["wan_interface_ip_prefix"],
+      wan_network       = split("/", var.edge["wan_interface_ip_prefix"])[0],
+      wan_netmask       = cidrnetmask(var.edge["wan_interface_ip_prefix"])
       customer_side_asn = var.edge["customer_side_asn"],
       router_id         = local.wan_default
     })
